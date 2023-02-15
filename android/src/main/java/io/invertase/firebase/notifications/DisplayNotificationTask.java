@@ -475,7 +475,7 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
       context,
       notificationId.hashCode(),
       intent,
-      PendingIntent.FLAG_MUTABLE
+      PendingIntent.FLAG_IMMUTABLE
     );
   }
 
@@ -492,7 +492,7 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
       context,
       notificationId.hashCode(),
       intent,
-      PendingIntent.FLAG_UPDATE_CURRENT
+      PendingIntent.FLAG_IMMUTABLE
     );
   }
 

@@ -301,7 +301,7 @@ class RNFirebaseNotificationManager {
       context,
       notificationId.hashCode(),
       notificationIntent,
-      PendingIntent.FLAG_UPDATE_CURRENT
+      PendingIntent.FLAG_IMMUTABLE
     );
     alarmManager.cancel(pendingIntent);
   }
@@ -577,7 +577,7 @@ class RNFirebaseNotificationManager {
       context,
       notificationId.hashCode(),
       notificationIntent,
-      PendingIntent.FLAG_UPDATE_CURRENT
+      PendingIntent.FLAG_IMMUTABLE
     );
 
     if (schedule.containsKey("repeatInterval")) {
