@@ -1,13 +1,14 @@
 <p align="center">
-  <a href="https://invertase.io/oss/react-native-firebase">
-    <img width="180px" src="https://i.imgur.com/JIyBtKW.png"><br/>
+  <a href="https://www.npmjs.com/package/react-native-firebase-fork">
   </a>
-  <h2 align="center">React Native Firebase</h2>
+  <a href="https://github.com/FedericoAsap/react-native-firebase">
+  </a>
+  <h2 align="center">React Native Firebase Asap Developers Fork</h2>
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/react-native-firebase"><img src="https://img.shields.io/npm/dm/react-native-firebase.svg?style=flat-square" alt="NPM downloads"></a>
-  <a href="https://www.npmjs.com/package/react-native-firebase"><img src="https://img.shields.io/npm/v/react-native-firebase.svg?style=flat-square" alt="NPM version"></a>
+  <a href="https://www.npmjs.com/package/react-native-firebase-fork"><img src="https://img.shields.io/npm/dm/react-native-firebase.svg?style=flat-square" alt="NPM downloads"></a>
+  <a href="https://www.npmjs.com/package/react-native-firebase-fork"><img src="https://img.shields.io/npm/v/react-native-firebase.svg?style=flat-square" alt="NPM version"></a>
   <a href="/LICENSE"><img src="https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square" alt="License"></a>
   <a href="#backers"><img src="https://opencollective.com/react-native-firebase/backers/badge.svg" alt="Backers on Open Collective"></a>
   <a href="#sponsors"><img src="https://opencollective.com/react-native-firebase/sponsors/badge.svg" alt="Sponsors on Open Collective"></a>
@@ -15,11 +16,9 @@
   <a href="https://twitter.com/rnfirebase"><img src="https://img.shields.io/twitter/follow/rnfirebase.svg?style=social&label=Follow" alt="Follow on Twitter"></a>
 </p>
 
-## Version 6 of React Native Firebase
+## Version 5 of React Native Firebase
 
-**React Native Firebase v6 is out!** It lives under a different package namespace. Want upgrade information? Head to <https://rnfirebase.io>
-
-All the information in this README is for **Version 5** of React Native Firebase, which is on life-support only. Please consider upgrading. Thanks!
+Only this version is being used, as it still manages notifications and works on android 13.
 
 ## Introduction
 
@@ -72,7 +71,7 @@ Using the native Firebase SDKs with **React Native Firebase** allows you to cons
 | Firebase iOS SDK          | 4.7.0 +  | ^5.10.x -^5.18.x | ^5.19.x - ^5.20.x |                              ^5.19.x - ^6.x                              |     6.13+     |
 
 ⚠ The Hermes VM availble with react-native 0.60.3 and higher is **not currently supported**. Some initial testing has been done and it appears that valid code in this library does not function correctly with Hermes. Use the standard ('JSC') VM.
-⚠ For **iOS 13** you must use Firebase iOS SDK at version `^6.5.x`. Otherwise your app may crash, for more information [take a look on this issue](https://github.com/invertase/react-native-firebase/issues/2409)
+⚠ For **iOS 13** you must use Firebase iOS SDK at version `^6.5.x`. Otherwise your app may crash, for more information [take a look on this issue](https://github.com/FedericoAsap/react-native-firebase/issues/2409)
 
 ---
 
@@ -88,13 +87,9 @@ For questions and support please use our [Discord chat](https://discord.gg/C9aK2
 
 Please make sure to complete the issue template before opening an issue. Issues not conforming to the guidelines may be closed immediately.
 
-## Feature Requests
-
-For feature requests please visit our [Feature Request Board](https://boards.invertase.io/react-native-firebase).
-
 ## Changelog
 
-Detailed changes for each release are documented in the [releases notes](https://github.com/invertase/react-native-firebase/releases).
+Detailed changes for each release are documented in the [releases notes](https://github.com/FedericoAsap/react-native-firebase/releases).
 
 ---
 
