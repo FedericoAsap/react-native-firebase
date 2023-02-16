@@ -4,10 +4,9 @@
     [
       "istanbul",
       {
-        "cwd": "..",
         "instrument": true,
-        "relativePath": true,
-        "include": ["**/packages/**"],
+        "relativePath": false,
+        "include": ["**/src/**"],
         "useInlineSourceMaps": false
       }
     ]

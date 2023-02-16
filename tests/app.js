@@ -1,93 +1,117 @@
-/*
- * Copyright (c) 2016-present Invertase Limited & Contributors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this library except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
+/* eslint-disable import/extensions,import/no-unresolved,import/first */
+import React, { Component } from 'react';
+import {
+  AppRegistry,
+  Text,
+  View,
+  Image,
+  StyleSheet,
+  YellowBox,
+} from 'react-native';
 
-import '@react-native-firebase/analytics';
-import firebase, * as modular from '@react-native-firebase/app';
-import '@react-native-firebase/app-check';
-import '@react-native-firebase/app-distribution';
-import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNativeEventEmitter';
-import '@react-native-firebase/app/lib/utils';
-import '@react-native-firebase/auth';
-import '@react-native-firebase/crashlytics';
-import '@react-native-firebase/database';
-import '@react-native-firebase/dynamic-links';
-import '@react-native-firebase/firestore';
-import * as functionsModular from '@react-native-firebase/functions';
-import * as remoteConfigModular from '@react-native-firebase/remote-config';
-import * as messagingModular from '@react-native-firebase/messaging';
-import '@react-native-firebase/in-app-messaging';
-import '@react-native-firebase/installations';
-import '@react-native-firebase/messaging';
-import '@react-native-firebase/ml';
-import * as perfModular from '@react-native-firebase/perf';
-import '@react-native-firebase/remote-config';
-import '@react-native-firebase/storage';
+YellowBox.ignoreWarnings(['Require cycle:']);
+
+import firebase from 'react-native-firebase';
 import jet from 'jet/platform/react-native';
-import React from 'react';
-import DeviceInfo from 'react-native-device-info';
-import { AppRegistry, Button, NativeModules, Text, View } from 'react-native';
 
-jet.exposeContextProperty('NativeModules', NativeModules);
-jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
-jet.exposeContextProperty('DeviceInfo', DeviceInfo);
-jet.exposeContextProperty('module', firebase);
-jet.exposeContextProperty('modular', modular);
-jet.exposeContextProperty('functionsModular', functionsModular);
-jet.exposeContextProperty('remoteConfigModular', remoteConfigModular);
-jet.exposeContextProperty('perfModular', perfModular);
+class Root extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentTest: null,
+    };
 
-jet.exposeContextProperty('messagingModular', messagingModular);
+    jet.exposeContextProperty('root', this);
+    jet.exposeContextProperty('module', firebase);
+  }
 
+  render() {
+    const { currentTest } = this.state;
+    if (!currentTest) return null;
 
-firebase.database().useEmulator('localhost', 9000);
-firebase.auth().useEmulator('http://localhost:9099');
-firebase.firestore().useEmulator('localhost', 8080);
-firebase.storage().useEmulator('localhost', 9199);
-firebase.functions().useEmulator('localhost', 5001);
+    const module = (() => {
+      if (currentTest.parent && currentTest.parent.parent) {
+        return currentTest.parent.parent.title;
+      }
+      return currentTest.parent.title;
+    })();
 
-// Firestore caches documents locally (a great feature!) and that confounds tests
-// as data from previous runs pollutes following runs until re-install the app. Clear it.
-firebase.firestore().clearPersistence();
+    const group = (() => {
+      if (currentTest.parent && currentTest.parent.parent) {
+        return currentTest.parent.title;
+      }
+      return '';
+    })();
 
-function Root() {
-  return (
-    <View
-      testID="welcome"
-      style={{ flex: 1, paddingTop: 20, justifyContent: 'center', alignItems: 'center' }}
-    >
-      <Text style={{ fontSize: 25, marginBottom: 30 }}>React Native Firebase</Text>
-      <Text style={{ fontSize: 25, marginBottom: 30 }}>End-to-End Testing App</Text>
-      <Button
-        style={{ flex: 1, marginTop: 20 }}
-        title={'Test Native Crash Now.'}
-        onPress={() => {
-          firebase.crashlytics().crash();
-        }}
-      />
-      <View testId="spacer" style={{ height: 20 }} />
-      <Button
-        style={{ flex: 1, marginTop: 20 }}
-        title={'Test Javascript Crash Now.'}
-        onPress={() => {
-          undefinedVariable.notAFunction();
-        }}
-      />
-    </View>
-  );
+    const retrying = (() => {
+      const retry = currentTest.currentRetry();
+      if (retry > 0) {
+        return `⚠️ Test failed, retrying... (${retry})`;
+      }
+      return null;
+    })();
+
+    return (
+      <View style={[styles.container, styles.horizontal]}>
+        <Image
+          source={{
+            uri:
+              'https://github.com/invertase/react-native-firebase-starter/raw/master/assets/RNFirebase.png',
+          }}
+          style={[styles.logo]}
+        />
+        <Text style={[styles.item, styles.module]} testID="module">
+          {module}
+        </Text>
+        <Text style={styles.item} testID="group">
+          {group}
+        </Text>
+        <Text style={styles.item} testID="title">
+          {currentTest.title}
+        </Text>
+        {retrying && (
+          <Text style={[styles.retry, styles.item]} testID="title">
+            {retrying}
+          </Text>
+        )}
+      </View>
+    );
+  }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  horizontal: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+  },
+  item: {
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  retry: {
+    marginTop: 10,
+    fontSize: 20,
+    color: '#cccc33',
+  },
+  module: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  group: {
+    fontSize: 16,
+    color: 'grey',
+  },
+  logo: {
+    height: 120,
+    marginBottom: 16,
+    width: 120,
+  },
+});
 
 AppRegistry.registerComponent('testing', () => Root);

@@ -1,22 +1,24 @@
 module.exports = {
   env: {
-    test: {
+    development: {
       presets: [
         [
-          '@babel/preset-env',
+          '@invertase/react-native-syntax',
           {
-            targets: {
-              node: 'current',
-            },
+            flow: 'comment',
           },
         ],
-        'module:./tests/node_modules/metro-react-native-babel-preset',
+      ],
+    },
+    publish: {
+      presets: [
+        [
+          '@invertase/react-native-syntax',
+          {
+            flow: 'strip',
+          },
+        ],
       ],
     },
   },
-  plugins: [
-    ['@babel/plugin-proposal-private-property-in-object', { loose: true }],
-    ['@babel/plugin-proposal-class-properties', { loose: true }],
-    ['@babel/plugin-proposal-private-methods', { loose: true }],
-  ],
 };

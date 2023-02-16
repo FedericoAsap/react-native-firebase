@@ -1,88 +1,58 @@
 require 'json'
+package = JSON.parse(File.read('../../package.json'))
 
-# Settings to test various overrides if desired
-appPackage = JSON.parse(File.read(File.join('..', '..', 'node_modules', '@react-native-firebase', 'app', 'package.json')))
-$FirebaseSDKVersion = appPackage['sdkVersions']['ios']['firebase']
-#$FirebaseSDKVersion = '8.0.0' # https://firebase.google.com/support/release-notes/ios
-Pod::UI.puts "react-native-firebase/tests: Using Firebase SDK version '#{$FirebaseSDKVersion}'"
-$RNFirebaseAsStaticFramework = true # toggle this to true (and set 'use_frameworks!' below to test static frameworks)
-
-# Toggle this to true for the no-ad-tracking Analytics subspec. Useful at minimum for Kids category apps.
-# See: https://firebase.google.com/support/release-notes/ios#analytics - requires firebase-ios-sdk 7.11.0+
-#$RNFirebaseAnalyticsWithoutAdIdSupport = true # toggle this to true for the no-ad-tracking Analytics subspec
-
-# Toggle this to true if you want to include support for on device conversion measurement APIs
-$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true
-
-# Versions used below, for quick reference / outdated+upgrade checks
-$iOSMinimumDeployVersion = '12.4'
-
-platform :ios, $iOSMinimumDeployVersion
 install! 'cocoapods', :deterministic_uuids => false
-
-
-require_relative '../node_modules/react-native/scripts/react_native_pods'
-require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+# Uncomment this line to define a global platform for your project
+# platform :ios, '8.0'
 
 target 'testing' do
-  # set this and toggle '$RNFirebaseAsStaticFramework' above to test static frameworks)
-  use_frameworks! :linkage => :static
+  platform :ios, '9.0'
+  # Uncomment this line if you're using Swift or would like to use dynamic frameworks
+  # use_frameworks!
+  rnfb_version = package["version"]
+  react_native_path = "../node_modules/react-native"
+  pod 'React', :path => "#{react_native_path}", :subspecs => [
+    'Core',
+    'CxxBridge', # Include this for RN >= 0.47
+    'DevSupport', # Include this to enable In-App Devmenu if RN >= 0.43
+    'RCTText',
+    'RCTNetwork',
+    'RCTWebSocket', # Needed for debugging
+    'RCTAnimation', # Needed for FlatList and animations running on native UI thread
+  ]
 
-  config = use_native_modules!
-  # Flags change depending on the env values.
-  flags = get_default_flags()
+  pod "yoga", :path => "#{react_native_path}/ReactCommon/yoga"
 
-  use_react_native!(
-    :path => config[:reactNativePath],
-    # Hermes is now enabled by default. Disable by setting this flag to false.
-    # Upcoming versions of React Native may rely on get_default_flags(), but
-    # we make it explicit here to aid in the React Native upgrade process.
-    :hermes_enabled => true,
-    :fabric_enabled => flags[:fabric_enabled],
-    # Enables Flipper.
-    #
-    # Note that if you have use_frameworks! enabled, Flipper will not work and
-    # you should disable the next line.
-    :flipper_configuration => FlipperConfiguration.disabled,
-    # An absolute path to your application root.
-    :app_path => "#{Pod::Config.instance.installation_root}/.."
-  )
+  # Third party deps podspec link
+  pod 'DoubleConversion', :podspec => "#{react_native_path}/third-party-podspecs/DoubleConversion.podspec"
+  pod 'glog', :podspec => "#{react_native_path}/third-party-podspecs/glog.podspec"
+  pod 'Folly', :podspec => "#{react_native_path}/third-party-podspecs/Folly.podspec"
+  pod 'RNFirebase', :path => '../../ios/RNFirebase.podspec', :version => "~> #{rnfb_version}"
 
-  # Use pre-compiled firestore frameworks to optimize compile time. Auto-includes leveldb if needed.
-  # pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
-
-  # If leveldb auto-inclusion fails and build fails with leveldb symbol conflicts, use this subspec:
-  # pod 'FirebaseFirestore/WithoutLeveldb', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
+  # Pods for ReactNativeFirebaseDemo
+  pod 'Firebase/Core', '~> 6.13.0'
+  pod 'Firebase/AdMob', '~> 6.13.0'
+  pod 'Firebase/Auth', '~> 6.13.0'
+  pod 'GoogleSignIn', '~> 4.4'
+  pod 'Firebase/Database', '~> 6.13.0'
+  pod 'Firebase/Functions', '~> 6.13.0'
+  pod 'Firebase/DynamicLinks', '~> 6.13.0'
+  pod 'Firebase/Firestore', '~> 6.13.0'
+  pod 'Firebase/Messaging', '~> 6.13.0'
+  pod 'Firebase/RemoteConfig', '~> 6.13.0'
+  pod 'Firebase/Storage', '~> 6.13.0'
+  pod 'Firebase/Performance', '~> 6.13.0'
+  pod 'Fabric', '~> 1.10.2'
+  pod 'Crashlytics', '~> 3.14.0'
 
   post_install do |installer|
-    react_native_post_install(
-      installer,
-      # Set `mac_catalyst_enabled` to `true` in order to apply patches
-      # necessary for Mac Catalyst builds
-      :mac_catalyst_enabled => false
-    )
-
-    installer.aggregate_targets.each do |aggregate_target|
-      aggregate_target.user_project.native_targets.each do |target|
-        target.build_configurations.each do |config|
-          # Arch selection is needed to work across M1/Intel macs, became necessary when App Check was added
-          config.build_settings['ONLY_ACTIVE_ARCH'] = 'YES'
-          config.build_settings['EXCLUDED_ARCHS'] = 'i386'
-        end
-      end
-      aggregate_target.user_project.save
-    end
-
-
-    # Turn off warnings on non-RNFB dependencies - some of them are really really noisy
     installer.pods_project.targets.each do |target|
-      if !target.name.include? "RNFB"
+      if target.name == 'yoga'
         target.build_configurations.each do |config|
-          config.build_settings["GCC_WARN_INHIBIT_ALL_WARNINGS"] = "YES"
+          config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = 'NO'
+          config.build_settings['GCC_WARN_64_TO_32_BIT_CONVERSION'] = 'NO'
         end
       end
     end
-
-    __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
 end
